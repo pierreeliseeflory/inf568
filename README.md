@@ -10,7 +10,7 @@
 2. Run the default Makefile. 
 3. Run the binary:
 
-> bin/shake128 output_size_in_bits < string_to_be_hashed
+> bin/shake128 output_size_in_bits < file_to_be_hashed
 
 #### Example
 
