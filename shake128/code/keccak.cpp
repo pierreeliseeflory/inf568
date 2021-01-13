@@ -1,51 +1,4 @@
 #include "keccak.hpp"
-#include "permutations.hpp"
-
-// only required for debugging
-void printState(keccak_state state) {
-    std::cout << std::hex  << std::endl;
-    for (int y = 0; y < 5; ++y) {
-        for (int x = 0; x < 5; ++x) {
-            std::cout << std::setw(16) << std::setfill('0') << state[x][y].to_ulong() << " ";;
-        }
-        std::cout << "\n";
-    }
-        std::cout << std::endl;
-}
-
-// debugging version of the keccak rounds
-void keccak_p_with_display () {
-    keccak_state state;
-
-    std::cout << "Initial State" << "\n";
-    printState(state);
-
-    for (int i_r = 0; i_r < 24; ++i_r) {
-        std::cout << "Round " << i_r << " :" << "\n";
-        theta(state);
-
-        std::cout << "After Theta" << "\n";
-        printState(state);
-
-        rho(state);
-        std::cout << "After Rho" << "\n";
-        printState(state);
-
-        pi(state);
-        std::cout << "After Pi" << "\n";
-        printState(state);
-
-        chi(state);
-        std::cout << "After Chi" << "\n";
-        printState(state);
-
-        iota(state, i_r);
-        std::cout << "After Iota" << "\n";
-        printState(state);
-    }
-
-    stateLinearOutput(state);
-}
 
 // performs the permutations according to the FIPS
 void keccak_p (keccak_state &state) {
@@ -57,29 +10,6 @@ void keccak_p (keccak_state &state) {
         iota(state, i_r);
     }
 }
-
-// to compare with the example given
-void stateLinearOutput(keccak_state state) {
-    std::cout << std::hex  << std::endl;
-
-    std::bitset<8> hexa;
-
-    for (int y = 0; y < 5; ++y) {
-        for (int x = 0; x < 5; ++x) {
-            for (int t = 0; t < 8; ++t) {
-                for (int k = 0; k < 8; ++k) {
-                    hexa[k] = state[x][y][8*t + k];
-                }
-                std::cout << std::setw(2) << std::setfill('0') << hexa.to_ulong() << " ";;
-            }
-        }
-    }
-        std::cout << std::endl;
-}
-
-// pad(x, m) -> m + len(pad(x, m)) est un multiple de x
-// ici x = r = 1344
-// m = len(N)
 
 // performs the padding both for a regula Keccak (10*1 padding) and the SHAKE128 specific padding (1111)
 std::vector<std::bitset<1344>> shake128Padding(std::string input) {
@@ -139,6 +69,7 @@ void squeeze (keccak_state & state, int output_size) {
     if (remaining_bits != 0) number_squeeze_round++;
 
     std::bitset<64> tmp;
+    std::bitset<8> hex;
 
     std::cout << std::hex ;
 
@@ -146,7 +77,6 @@ void squeeze (keccak_state & state, int output_size) {
         for (int k = 0; k < 1344; ++k) {
             output[k/64][k%64] = state[(k%320)/64][k / 320][k%64];
         }
-        keccak_p(state);
         
         for (int i = 0; i < 1344/64; ++i) {
             for (int j = 0; j < 4; ++j) {
@@ -157,6 +87,7 @@ void squeeze (keccak_state & state, int output_size) {
             }
             std::cout << std::setw(16) << std::setfill('0') << tmp.to_ulong();
         }
+        keccak_p(state);
     }
 
     // last squeeze (no permutations and may be not perfectly aligned with r (or even 64))
@@ -172,11 +103,19 @@ void squeeze (keccak_state & state, int output_size) {
         }
         std::cout << std::setw(16) << std::setfill('0') << tmp.to_ulong();
     }
+    // for output to be meaningful, we need the output_size to be a multiple of 4 (represented by 1 hex char)
     if (remaining_bits%64 != 0) {
-        for (int i = remaining_bits%64; i < 64; ++i) {
-            output[remaining_bits/64][i] = 0;
+        for (int j = 0; j < 4; ++j) {
+            for (int k = 0; k < 8; ++k) {
+                tmp[8*(7-j)+k] = output[remaining_bits/64][8*j + k];
+                tmp[8*j + k] = output[remaining_bits/64][8*(7-j)+k];
+            }
         }
-        std::cout << std::setw(16) << std::setfill('x') << output[remaining_bits/64].to_ulong();
+
+        std::stringstream stream;
+        stream << std::hex << tmp.to_ulong();
+        std::string result( stream.str().substr(0, (remaining_bits%64/4)) );
+        std::cout << result;
     }
     std::cout << std::endl;
 }
@@ -198,7 +137,6 @@ void shake128(int output_size) {
         ++count;
         input += buf;
     }
-    std::cout << std::endl;
     sponge(input, output_size);
 }
 
@@ -208,7 +146,8 @@ int main(int argc, char *argv[])
         std::cout << "Usage: ./shake128 size_output" << std::endl;
         return 1;
     }
-    int output_size = atoi(argv[1]);
-    shake128(output_size);
+    // I initially used bits (by multiple of 4 for a correct output)
+    shake128(8*atoi(argv[1]));
+
     return 0;
 }

@@ -8,7 +8,10 @@
 #include <iomanip>
 #include <cmath>
 
-#include "keccak.hpp"
+// a data type enabling to compute permutations on a structure similar to the one proposed in the FIPS
+typedef std::array<std::array<std::bitset<64>, 5>, 5> keccak_state;
+
+typedef std::array<std::bitset<64>, 5> keccak_plane;
 
 unsigned modulo( int value, unsigned m);
 

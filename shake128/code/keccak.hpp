@@ -9,14 +9,10 @@
 #include <iomanip>
 #include <string>
 
-// a data type enabling to compute permutations on a structure similar to the one proposed in the FIPS
-typedef std::array<std::array<std::bitset<64>, 5>, 5> keccak_state;
-
-typedef std::array<std::bitset<64>, 5> keccak_column;
+#include "permutations.hpp"
+#include "utils.hpp"
 
 void keccak_p ();
-
-void stateLinearOutput(keccak_state);
 
 std::vector<std::bitset<1344>> shake128Padding(std::string);
 

@@ -1,7 +1,5 @@
 #include "permutations.hpp"
 
-// 1600 bits 5 * 5 * 64
-
 // b = 1600
 // n_r = 24
 // w = 64
@@ -9,10 +7,7 @@
 // r = 1344
 // c = 256
 
-// 0 <= x < 5
-// 0 <= y < 5
-// 0 <= z < w (64)
-
+// A custom modulo to ensure positive values
 unsigned modulo( int value, unsigned m) {
     int mod = value % (int)m;
     if (mod < 0) {
@@ -21,8 +16,22 @@ unsigned modulo( int value, unsigned m) {
     return mod;
 }
 
+// The implementations below follow stricly the procedures presented in the fips
+
+// The keccak_state data structure has the same structure as the state array from the fips
+
+/*
+In SHAKE128, we have:
+
+    keccak_state A[x, y, z], with:
+        - 0 <= x < 5
+        - 0 <= y < 5
+        - 0 <= z < 64
+*/
+
+
 void theta(keccak_state &state) {
-    keccak_column C, D;
+    keccak_plane C, D;
 
     for (int x = 0; x < 5; ++x) {
         for (int z = 0; z < 64; ++z)
@@ -102,6 +111,7 @@ void chi(keccak_state &state) {
     }
 }
 
+// Since we have the algorithm to compute the constant in the FIPS, I decided not to hardcode them but produce them at runtime
 bool rc(int t) {
     std::bitset<8> R(1);
     std::bitset<9> R2(0);
