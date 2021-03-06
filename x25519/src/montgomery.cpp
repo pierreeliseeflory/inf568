@@ -85,7 +85,7 @@ mpz_class divide(mpz_class x, mpz_class z, mpz_class p) {
     return (x*res)%p;
 }
 
-mpz_class montgomeryLadder (mpz_class m, curve_point P, mpz_class A24, mpz_class p) {
+curve_point montgomeryLadder (mpz_class m, curve_point P, mpz_class A24, mpz_class p) {
     montgomery_rung state;
     state.x0 = xDBL(P, A24, p);
     state.x1 = P;
@@ -101,7 +101,7 @@ mpz_class montgomeryLadder (mpz_class m, curve_point P, mpz_class A24, mpz_class
     }
     swap(decomposition[beta] - '0', state);
 
-    return divide(state.x0.X, state.x0.Z, p);
+    return state.x0;
 }
 
 void testMontgomery() {
@@ -115,20 +115,20 @@ void testMontgomery() {
     x = 2;
     input.X = x;
     input.Z = 1;
-    result = montgomeryLadder(1, input, A24, p);
-    std::cout << "[1]P = " << result << std::endl;
-    result = montgomeryLadder(2, input, A24, p);
-    std::cout << "[2]P = " << result << std::endl;
+    tmp = montgomeryLadder(1, input, A24, p);
+    std::cout << "[1]P = " << divide(tmp.X, tmp.Z, p) << std::endl;
+    tmp = montgomeryLadder(2, input, A24, p);
+    std::cout << "[2]P = " << divide(tmp.X, tmp.Z, p) << std::endl;
     output = xDBL(input, A24, p);
     output.X = divide(output.X, output.Z, p);
     output.Z = 1;
     std::cout << "[2]P = " << output.X << "  //xDBL"  << std::endl;
     output = xADD(input, output, input, p);
     std::cout << "[3]P = " << divide(output.X, output.Z, p) << "    //xADD" << std::endl;
-    result = montgomeryLadder(3, input, A24, p);
-    std::cout << "[3]P = " << result << std::endl;
-    result = montgomeryLadder(77, input, A24, p);
-    std::cout << "[77]P = " << result << std::endl;
+    tmp = montgomeryLadder(3, input, A24, p);
+    std::cout << "[3]P = " << divide(tmp.X, tmp.Z, p) << std::endl;
+    tmp = montgomeryLadder(77, input, A24, p);
+    std::cout << "[77]P = " << divide(tmp.X, tmp.Z, p) << std::endl;
     std::cout << "=================" << std::endl;
 
 
@@ -136,59 +136,61 @@ void testMontgomery() {
     p = 1009;
     A24 = 171;
     x = 7;
-    result = montgomeryLadder(1, input, A24, p);
-    std::cout << "[1]P = " << result << std::endl;
-    result = montgomeryLadder(2, input, A24, p);
-    std::cout << "[2]P = " << result << std::endl;
+    input.X = x;
+    tmp = montgomeryLadder(1, input, A24, p);
+    std::cout << "[1]P = " << divide(tmp.X, tmp.Z, p) << std::endl;
+    tmp = montgomeryLadder(2, input, A24, p);
+    std::cout << "[2]P = " << divide(tmp.X, tmp.Z, p) << std::endl;
     output = xDBL(input, A24, p);
     output.X = divide(output.X, output.Z, p);
     output.Z = 1;
     std::cout << "[2]P = " << output.X << "  //xDBL"  << std::endl;
     output = xADD(input, output, input, p);
     std::cout << "[3]P = " << divide(output.X, output.Z, p) << "    //xADD" << std::endl;
-    result = montgomeryLadder(3, input, A24, p);
-    std::cout << "[3]P = " << result << std::endl;
-    result = montgomeryLadder(5, input, A24, p);
-    std::cout << "[5]P = " << result << std::endl;
-    result = montgomeryLadder(34, input, A24, p);
-    std::cout << "[34]P = " << result << std::endl;
-    result = montgomeryLadder(104, input, A24, p);
-    std::cout << "[104]P = " << result << std::endl;
-    result = montgomeryLadder(947, input, A24, p);
-    std::cout << "[947]P = " << result << std::endl;
+    tmp = montgomeryLadder(3, input, A24, p);
+    std::cout << "[3]P = " << divide(tmp.X, tmp.Z, p) << std::endl;
+    tmp = montgomeryLadder(5, input, A24, p);
+    std::cout << "[5]P = " << divide(tmp.X, tmp.Z, p) << std::endl;
+    tmp = montgomeryLadder(34, input, A24, p);
+    std::cout << "[34]P = " << divide(tmp.X, tmp.Z, p) << std::endl;
+    tmp = montgomeryLadder(104, input, A24, p);
+    std::cout << "[104]P = " << divide(tmp.X, tmp.Z, p) << std::endl;
+    tmp = montgomeryLadder(947, input, A24, p);
+    std::cout << "[947]P = " << divide(tmp.X, tmp.Z, p) << std::endl;
     std::cout << "=================" << std::endl;
 
     std::cout << "Test n°3" << std::endl;
     p = (((mpz_class) 1) << 255) - 19;;
     A24 = 121666;
     x = 9;
-    result = montgomeryLadder(2, input, A24, p);
-    std::cout << "[2]P = " << result << std::endl;
+    input.X = x;
+    tmp = montgomeryLadder(2, input, A24, p);
+    std::cout << "[2]P = " << divide(tmp.X, tmp.Z, p) << std::endl;
     output = xDBL(input, A24, p);
     output.X = divide(output.X, output.Z, p);
     output.Z = 1;
     std::cout << "[2]P = " << output.X << "  //xDBL"  << std::endl;
     output = xADD(output, input, input, p);
     std::cout << "[2]P + P = " << divide(output.X, output.Z, p) << std::endl;
-    result = montgomeryLadder(3, input, A24, p);
-    std::cout << "[3]P = " << result << std::endl;
-    result = montgomeryLadder(4, input, A24, p);
-    std::cout << "[4]P = " << result << std::endl;
-    result = montgomeryLadder(2, input, A24, p);
-    output.X = result;
+    tmp = montgomeryLadder(3, input, A24, p);
+    std::cout << "[3]P = " << divide(tmp.X, tmp.Z, p) << std::endl;
+    tmp = montgomeryLadder(4, input, A24, p);
+    std::cout << "[4]P = " << divide(tmp.X, tmp.Z, p) << std::endl;
+    tmp = montgomeryLadder(2, input, A24, p);
+    output.X = divide(tmp.X, tmp.Z, p);
     output.Z = 1;
-    result = montgomeryLadder(2, output, A24, p);
-    std::cout << "[2][2]P = " << result << std::endl;
-    result = montgomeryLadder(3, input, A24, p);
-    output.X = result;
+    tmp = montgomeryLadder(2, output, A24, p);
+    std::cout << "[2][2]P = " << divide(tmp.X, tmp.Z, p) << std::endl;
+    tmp = montgomeryLadder(3, input, A24, p);
+    output.X = divide(tmp.X, tmp.Z, p);
     output.Z = 1;
-    tmp.X = montgomeryLadder(2, input, A24, p);
-    tmp.Z = 1;
+    tmp = montgomeryLadder(2, input, A24, p);
+    // tmp.Z = 1;
     output = xADD(output, input, tmp, p);
     std::cout << "[3]P + P = " << divide(output.X, output.Z, p) << std::endl;
-    result = montgomeryLadder(5, input, A24, p);
-    std::cout << "[5]P = " << result << std::endl;
-    result = montgomeryLadder(7, input, A24, p);
-    std::cout << "[7]P = " << result << std::endl;
+    tmp = montgomeryLadder(5, input, A24, p);
+    std::cout << "[5]P = " << divide(tmp.X, tmp.Z, p) << std::endl;
+    tmp = montgomeryLadder(7, input, A24, p);
+    std::cout << "[7]P = " << divide(tmp.X, tmp.Z, p) << std::endl;
     std::cout << "=================" << std::endl;
 }

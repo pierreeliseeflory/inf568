@@ -71,7 +71,8 @@ mpz_class x25519(mpz_class clampedScalar, mpz_class decodedCoordinate) {
     mpz_class A24 = 121666;
     // mpz_class A24 = 121665;
 
-    return montgomeryLadder(clampedScalar, point, A24, p);
+    point = montgomeryLadder(clampedScalar, point, A24, p);
+    return divide(point.X, point.Z, p);
 }
 
 int main(int argc, char *argv[])

@@ -23,7 +23,7 @@ curve_point xDBL(curve_point, mpz_class, mpz_class);
 
 void swap(int, montgomery_rung &);
 
-mpz_class montgomeryLadder (mpz_class, curve_point, mpz_class, mpz_class);
+curve_point montgomeryLadder (mpz_class, curve_point, mpz_class, mpz_class);
 
 mpz_class divide(mpz_class, mpz_class, mpz_class);
 
