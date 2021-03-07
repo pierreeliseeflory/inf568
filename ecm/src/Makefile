@@ -7,4 +7,4 @@ TARGETS = ecm
 all: $(TARGETS)
 
 ecm: ecm.cpp ecm.hpp montgomery.cpp montgomery.hpp
-	$(CXX) $(CXXFLAGS) ecm.cpp montgomery.cpp $(LDFLAGS) -o ecm
+	$(CXX) $(CXXFLAGS) ecm.cpp montgomery.cpp $(LDFLAGS) -o ../bin/ecm
