@@ -1,10 +1,10 @@
-# Poly1305
+# AEAD Chacha20 / Poly1305
 
 Pierre-Elisée Flory
 
 ## Building
 
-`make` to compile poly1305-gen and poly1305-check.
+`make` to compile aead_chacha20_poly1305.
 
 ## Files
 
@@ -12,10 +12,19 @@ Pierre-Elisée Flory
 
 Implements poly1305 according to the RFC. Uses the clamping function from D. Bernstein. Contains also the test vector presented in the RFC.
 
-### poly1305-gen
+### chacha20-core
 
-Reads an hexadecimal key and the content of a file and creates an authenticator using poly1305-core.
+Implements chacha20 encryption. Tests were performed in a different file.
 
-### poly1305-check
+OpenMP has been used to run in parallel a part of CHACHA20 Quarterround. Since no speedup was measured the final version doesn't use it.
 
-Reads an hexadecimal key, the content of a file and an authenticator to check that the message is wellauthenticated.
+### aead_chacha20-core_poly1305
+
+Usage:
+
+```shell
+$ ./aead_chacha20_poly1305 key nonce
+> [plaintext]
+```
+
+The program outputs the value in hexadecimal of the ciphertext, the AEAD construction and the tag.

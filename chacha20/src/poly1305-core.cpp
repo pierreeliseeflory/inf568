@@ -1,5 +1,5 @@
 #include <gmpxx.h>
-
+#include "poly1305-core.hpp"
 /*
 D. J. Bernstein
 Public domain.
@@ -19,6 +19,7 @@ void poly1305(unsigned char r[16], unsigned char s[16], unsigned char *message, 
     mpz_class r_, s_, p, acc, n;
 
     poly1305_clamp(r);
+
 
     for (int j = 0; j < 16; ++j) {
         r_ += ((mpz_class) r[j]) << 8 * j;
@@ -59,4 +60,14 @@ void poly1305(unsigned char r[16], unsigned char s[16], unsigned char *message, 
     }
     
     return;
+}
+
+void poly1305_chacha_key(uint8_t key[64], uint8_t message[], unsigned int message_size, uint8_t tag[16] ) {
+    uint8_t r[16];
+    uint8_t s[16];
+    for (int i = 0; i < 16; ++i) {
+        r[i] = key[i];
+        s[i] = key[16 + i];
+    }
+    poly1305(r, s, message, message_size, tag);
 }
